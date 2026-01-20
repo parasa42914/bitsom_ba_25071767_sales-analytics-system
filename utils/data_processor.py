@@ -1,0 +1,68 @@
+#Task 2.1
+
+def calculate_total_revenue(transactions):
+    """Calculates total revenue from all transactions"""
+    return sum(t['Quantity'] * t['UnitPrice'] for t in transactions)
+
+def region_wise_sales(transactions):
+    """Analyzes sales by region"""
+    total_revenue = calculate_total_revenue(transactions)
+    stats = {}
+    
+    for t in transactions:
+        reg = t['Region']
+        rev = t['Quantity'] * t['UnitPrice']
+        if reg not in stats:
+            stats[reg] = {'total_sales': 0.0, 'transaction_count': 0}
+        stats[reg]['total_sales'] += rev
+        stats[reg]['transaction_count'] += 1
+        
+    for reg in stats:
+        stats[reg]['percentage'] = round((stats[reg]['total_sales'] / total_revenue) * 100, 2)
+        
+    # Sort by total_sales descending
+    return dict(sorted(stats.items(), key=lambda x: x[1]['total_sales'], reverse=True))
+
+def top_selling_products(transactions, n=5):
+    """Finds top n products by total quantity sold"""
+    product_stats = {}
+    for t in transactions:
+        name = t['ProductName']
+        qty = t['Quantity']
+        rev = qty * t['UnitPrice']
+        if name not in product_stats:
+            product_stats[name] = [0, 0.0] # [TotalQty, TotalRev]
+        product_stats[name][0] += qty
+        product_stats[name][1] += rev
+        
+    # Convert to list of tuples and sort
+    result = [(name, stats[0], stats[1]) for name, stats in product_stats.items()]
+    result.sort(key=lambda x: x[1], reverse=True)
+    return result[:n]
+
+def customer_analysis(transactions):
+    """Analyzes customer purchase patterns"""
+    cust_stats = {}
+    for t in transactions:
+        cid = t['CustomerID']
+        rev = t['Quantity'] * t['UnitPrice']
+        pname = t['ProductName']
+        
+        if cid not in cust_stats:
+            cust_stats[cid] = {'total_spent': 0.0, 'purchase_count': 0, 'products': set()}
+        
+        cust_stats[cid]['total_spent'] += rev
+        cust_stats[cid]['purchase_count'] += 1
+        cust_stats[cid]['products'].add(pname)
+        
+    final_stats = {}
+    for cid, data in cust_stats.items():
+        final_stats[cid] = {
+            'total_spent': data['total_spent'],
+            'purchase_count': data['purchase_count'],
+            'avg_order_value': round(data['total_spent'] / data['purchase_count'], 2),
+            'products_bought': sorted(list(data['products'])) # Requirement: Unique products
+        }
+        
+    # Sort by total_spent descending
+    return dict(sorted(final_stats.items(), key=lambda x: x[1]['total_spent'], reverse=True))
