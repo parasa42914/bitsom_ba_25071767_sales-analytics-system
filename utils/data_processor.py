@@ -91,3 +91,18 @@ def find_peak_sales_day(transactions):
     trend = daily_sales_trend(transactions)
     peak_date = max(trend, key=lambda x: trend[x]['revenue'])
     return (peak_date, trend[peak_date]['revenue'], trend[peak_date]['transaction_count'])
+
+# Task 2.3
+
+def low_performing_products(transactions, threshold=10):
+    """Identifies products with total quantity < threshold"""
+    p_stats = {}
+    for t in transactions:
+        p = t['ProductName']
+        if p not in p_stats: p_stats[p] = [0, 0.0]
+        p_stats[p][0] += t['Quantity']
+        p_stats[p][1] += (t['Quantity'] * t['UnitPrice'])
+    
+    # Filter by threshold and sort ascending
+    result = [(name, q, r) for name, (q, r) in p_stats.items() if q < threshold]
+    return sorted(result, key=lambda x: x[1])
