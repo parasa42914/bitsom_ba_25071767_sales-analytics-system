@@ -41,31 +41,29 @@ def top_selling_products(transactions, n=5):
     return result[:n]
 
 def customer_analysis(transactions):
-    """Analyzes customer purchase patterns"""
-    cust_stats = {}
+    """Updated to ensure product list is unique and sorted correctly"""
+    stats = {}
     for t in transactions:
         cid = t['CustomerID']
         rev = t['Quantity'] * t['UnitPrice']
-        pname = t['ProductName']
-        
-        if cid not in cust_stats:
-            cust_stats[cid] = {'total_spent': 0.0, 'purchase_count': 0, 'products': set()}
-        
-        cust_stats[cid]['total_spent'] += rev
-        cust_stats[cid]['purchase_count'] += 1
-        cust_stats[cid]['products'].add(pname)
-        
-    final_stats = {}
-    for cid, data in cust_stats.items():
-        final_stats[cid] = {
+        if cid not in stats:
+            stats[cid] = {'total_spent': 0.0, 'purchase_count': 0, 'products': set()}
+        stats[cid]['total_spent'] += rev
+        stats[cid]['purchase_count'] += 1
+        stats[cid]['products'].add(t['ProductName'])
+    
+    # Requirement: Sort by total_spent descending
+    sorted_customers = sorted(stats.items(), key=lambda x: x[1]['total_spent'], reverse=True)
+    
+    result = {}
+    for cid, data in sorted_customers:
+        result[cid] = {
             'total_spent': data['total_spent'],
             'purchase_count': data['purchase_count'],
             'avg_order_value': round(data['total_spent'] / data['purchase_count'], 2),
-            'products_bought': sorted(list(data['products'])) # Requirement: Unique products
+            'products_bought': sorted(list(data['products'])) # Requirement: unique list
         }
-        
-    # Sort by total_spent descending
-    return dict(sorted(final_stats.items(), key=lambda x: x[1]['total_spent'], reverse=True))
+    return result
 
 # Task 2.2
 
@@ -106,3 +104,60 @@ def low_performing_products(transactions, threshold=10):
     # Filter by threshold and sort ascending
     result = [(name, q, r) for name, (q, r) in p_stats.items() if q < threshold]
     return sorted(result, key=lambda x: x[1])
+
+# Task 3.2
+import os
+import re
+
+def enrich_sales_data(transactions, product_mapping):
+    """Enriches transaction data with API product information"""
+    enriched_list = []
+    
+    for t in transactions:
+        # Requirement: Extract numeric ID (P101 -> 101)
+        numeric_id_match = re.search(r'\d+', t['ProductID'])
+        p_id = int(numeric_id_match.group()) if numeric_id_match else None
+        
+        # Enrichment Logic
+        if p_id in product_mapping:
+            info = product_mapping[p_id]
+            t.update({
+                'API_Category': info['category'],
+                'API_Brand': info['brand'],
+                'API_Rating': info['rating'],
+                'API_Match': True
+            })
+        else:
+            # Handle ID doesn't exist
+            t.update({
+                'API_Category': None,
+                'API_Brand': None,
+                'API_Rating': None,
+                'API_Match': False
+            })
+        enriched_list.append(t)
+    
+    # Save back to file
+    save_enriched_data(enriched_list)
+    return enriched_list
+
+def save_enriched_data(enriched_transactions, filename='data/enriched_sales_data.txt'):
+    """Saves enriched transactions back to file in pipe-delimited format"""
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    
+    headers = [
+        "TransactionID", "Date", "ProductID", "ProductName", "Quantity", 
+        "UnitPrice", "CustomerID", "Region", "API_Category", "API_Brand", 
+        "API_Rating", "API_Match"
+    ]
+    
+    with open(filename, 'w', encoding='utf-8') as f:
+        # Include new columns in header
+        f.write("|".join(headers) + "\n")
+        
+        for t in enriched_transactions:
+            # Handle None values appropriately
+            row = [
+                str(t.get(h, "None")) for h in headers
+            ]
+            f.write("|".join(row) + "\n")
