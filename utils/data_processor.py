@@ -66,3 +66,28 @@ def customer_analysis(transactions):
         
     # Sort by total_spent descending
     return dict(sorted(final_stats.items(), key=lambda x: x[1]['total_spent'], reverse=True))
+
+# Task 2.2
+
+def daily_sales_trend(transactions):
+    """Analyzes sales trends by date, sorted chronologically."""
+    trend = {}
+    for t in transactions:
+        d = t['Date']
+        rev = t['Quantity'] * t['UnitPrice']
+        if d not in trend:
+            trend[d] = {'revenue': 0.0, 'transaction_count': 0, 'customers': set()}
+        trend[d]['revenue'] += rev
+        trend[d]['transaction_count'] += 1
+        trend[d]['customers'].add(t['CustomerID'])
+    
+    for d in trend:
+        trend[d]['unique_customers'] = len(trend[d].pop('customers'))
+        
+    return dict(sorted(trend.items())) # Sort chronologically
+
+def find_peak_sales_day(transactions):
+    """Identifies the date with highest revenue."""
+    trend = daily_sales_trend(transactions)
+    peak_date = max(trend, key=lambda x: trend[x]['revenue'])
+    return (peak_date, trend[peak_date]['revenue'], trend[peak_date]['transaction_count'])
