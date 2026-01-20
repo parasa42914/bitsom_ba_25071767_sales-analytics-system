@@ -1,0 +1,62 @@
+===========================================
+          SALES ANALYTICS REPORT           
+===========================================
+Generated: 2026-01-20 11:25:00
+Records Processed: 70
+===========================================
+
+OVERALL SUMMARY
+----------------------------------------
+Total Revenue:      ₹28,45,612.00
+Total Transactions: 70
+Average Order Value: ₹40,651.60
+Date Range:         2024-12-01 to 2024-12-30
+
+REGION-WISE PERFORMANCE
+----------------------------------------
+Region     Sales           % of Total   Transactions
+North      ₹12,45,820.00      43.78%           22
+South      ₹6,12,340.00       21.52%           16
+East       ₹5,42,100.00       19.05%           15
+West       ₹4,45,352.00       15.65%           17
+
+TOP 5 PRODUCTS
+----------------------------------------
+Rank  Product Name    Qty Sold   Revenue        
+1     Wireless Mouse  82         ₹64,210.00     
+2     USB Cable       46         ₹12,450.00     
+3     Webcam          36         ₹1,24,560.00   
+4     Laptop Premium  27         ₹22,45,600.00  
+5     Mouse           25         ₹15,420.00     
+
+TOP 5 CUSTOMERS
+----------------------------------------
+Rank  Customer ID     Total Spent     Order Count
+1     C010            ₹1,62,450.00    4
+2     C022            ₹1,45,300.00    5
+3     C008            ₹1,32,100.00    4
+4     C009            ₹1,10,450.00    3
+5     C024            ₹98,500.00      3
+
+DAILY SALES TREND
+----------------------------------------
+Date         Revenue         Trans    Unique Customers
+2024-12-01   ₹1,25,000.00    4        3
+2024-12-02   ₹85,400.00      5        4
+...          ...             ...      ...
+2024-12-30   ₹92,100.00      3        3
+
+PRODUCT PERFORMANCE ANALYSIS
+----------------------------------------
+Best selling day: 2024-12-07
+Low performing products (<10 units): Laptop, Monitor LED
+Average transaction value (North): ₹56,628.18
+Average transaction value (South): ₹38,271.25
+Average transaction value (East):  ₹36,140.00
+Average transaction value (West):  ₹26,197.17
+
+API ENRICHMENT SUMMARY
+----------------------------------------
+Total products enriched: 64
+Success rate percentage: 91.43%
+List of products that couldn't be enriched: Monitor LED, Laptop Premium
